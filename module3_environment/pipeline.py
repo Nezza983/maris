@@ -33,9 +33,10 @@ DEMO_LAT = -18.00
 DEMO_LON = 147.00
 DEMO_TIME = "2022-07-15T06:00:00"
 
-# Path to the shared input file from Module 1
+# Path to spill input: local copy first, then integration dir (Module 1)
+LOCAL_SPILL_PATH = Path(__file__).resolve().parent / "spill_input.json"
 INTEGRATION_DIR = Path(__file__).resolve().parent.parent / "integration"
-SPILL_INPUT_PATH = INTEGRATION_DIR / "spill_input.json"
+SPILL_INPUT_PATH = LOCAL_SPILL_PATH if LOCAL_SPILL_PATH.exists() else INTEGRATION_DIR / "spill_input.json"
 
 OUTPUT_PATH = Path(__file__).resolve().parent / "environment.json"
 
