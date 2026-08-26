@@ -60,27 +60,49 @@ def get_mock_environment(lat, lon, time_str):
 
 def load_spill_input():
     """
-    Read the latest spill location/time from Module 1 shared JSON file.
-    Falls back to hardcoded demo values if unavailable.
+    Read spill location/time. Priority:
+      1. spill_input.json (local or integration dir)
+      2. Module 1 metadata files (metadata/S1_*.json)
+      3. Hardcoded demo fallback
     """
+    # --- Attempt 1: spill_input.json ---
     try:
         with open(SPILL_INPUT_PATH) as f:
             data = json.load(f)
         lat = float(data["latitude"])
         lon = float(data["longitude"])
         time_str = data["timestamp"]
-        print("Loaded spill input from " + SPILL_INPUT_PATH.name)
-        print("  lat=" + str(lat) + ", lon=" + str(lon) + ", time=" + time_str)
+        print("[Source: spill_input.json] lat=" + str(lat) + ", lon=" + str(lon) + ", time=" + time_str)
         if "image_id" in data:
-            print("  (source image: " + data["image_id"] + ")")
+            print("  (image: " + data["image_id"] + ")")
         return lat, lon, time_str
     except FileNotFoundError:
-        print("[WARN] " + str(SPILL_INPUT_PATH) + " not found. Using demo fallback.")
-        return DEMO_LAT, DEMO_LON, DEMO_TIME
+        print("[WARN] spill_input.json not found, trying Module 1 metadata...")
     except (json.JSONDecodeError, KeyError) as e:
-        print("[WARN] Error parsing " + str(SPILL_INPUT_PATH) + ": " + str(e))
-        return DEMO_LAT, DEMO_LON, DEMO_TIME
+        print("[WARN] Error parsing spill_input.json: " + str(e))
 
+    # --- Attempt 2: Module 1 metadata directory ---
+    metadata_dir = Path(__file__).resolve().parent.parent / "module1_data" / "metadata"
+    try:
+        s1_files = sorted(metadata_dir.glob("S1_*.json"))
+        if s1_files:
+            latest = s1_files[-1]
+            with open(latest) as f:
+                meta = json.load(f)
+            lat = float(meta["latitude"])
+            lon = float(meta["longitude"])
+            date_str = meta["date"]
+            time_str = date_str + "T06:00:00"
+            print("[Source: Module 1 metadata (" + latest.name + ")] lat=" + str(lat) + ", lon=" + str(lon) + ", time=" + time_str)
+            if "image_id" in meta:
+                print("  (image: " + meta["image_id"] + ")")
+            return lat, lon, time_str
+    except Exception as e:
+        print("[WARN] Module 1 metadata not available: " + str(e))
+
+    # --- Attempt 3: Demo fallback ---
+    print("Using hardcoded demo values.")
+    return DEMO_LAT, DEMO_LON, DEMO_TIME
 
 def sanity_check(env):
     """Validate that output values are physically reasonable."""
