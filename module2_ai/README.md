@@ -62,66 +62,26 @@ The whole pipeline is wrapped in a single function, `analyze_image()`, which is 
 
 ---
 
-## Setup
+## Setup (Google Colab)
 
-### Option A — Google Colab (recommended, easiest)
-
-This notebook was built for Colab and expects to prompt you for file uploads.
+This notebook is built for Colab and expects to prompt you for file uploads.
 
 1. Upload `oil_spill_main_compatibilty_sort.ipynb` to [Colab](https://colab.research.google.com/) (or open it straight from GitHub via Colab's "Open from GitHub" option).
 2. **Runtime → Change runtime type → GPU** (T4 is fine) — the model will run on CPU too, but a GPU makes training/eval much faster.
 3. Run cells top to bottom (see [Running it](#running-it) below for what each stage does). You'll be prompted twice for uploads:
    - `oil_spill_main_backup.pth` (the model checkpoint)
-   - your own `kaggle.json` (only needed if you want to download the training dataset — see below)
+   - your own `kaggle.json` (only needed if you want to download the training dataset)
 
 No manual dependency installation needed — Colab has most packages preinstalled, and the notebook itself `pip install`s the few it doesn't (`grad-cam`, `gradio`, `kaggle`).
-
-### Option B — Local / Jupyter
-
-1. **Clone the repo and switch to this branch:**
-   ```bash
-   git clone https://github.com/ShuraShipai/maris.git
-   cd maris
-   git checkout module2-ai
-   cd module2_ai
-   ```
-
-2. **Create a virtual environment (recommended):**
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate      # Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies:**
-   ```bash
-   pip install torch torchvision opencv-python numpy matplotlib scikit-learn grad-cam gradio kaggle
-   ```
-   *(Or, if a `requirements.txt` is present in this folder: `pip install -r requirements.txt`)*
-
-4. **Remove/skip the Colab-only cells.** The notebook has two cells that only work in Colab and aren't needed locally:
-   - `from google.colab import drive; drive.mount(...)`
-   - `from google.colab import files; uploaded = files.upload()`
-
-   Locally, just make sure `oil_spill_main_backup.pth` is sitting in the same folder as the notebook — the checkpoint-loading cell will find it automatically.
-
-5. **Kaggle API (only needed to download/retrain on the dataset):**
-   - Get your API token from [kaggle.com → Account → Create New API Token](https://www.kaggle.com/settings) — this downloads a `kaggle.json` file.
-   - Place it at `~/.kaggle/kaggle.json` (Mac/Linux) and run `chmod 600 ~/.kaggle/kaggle.json`.
-   - Skip the `files.upload()` cell for `kaggle.json` since it's already in place — the `kaggle datasets download` cell will just work.
-
-6. **Launch Jupyter and open the notebook:**
-   ```bash
-   jupyter notebook oil_spill_main_compatibilty_sort.ipynb
-   ```
 
 ---
 
 ## Running it
 
-1. Run the imports → model setup → load-checkpoint cells (Colab: upload the `.pth` when prompted; local: it loads automatically from the folder).
+1. Run the imports → model setup → load-checkpoint cells, uploading the `.pth` checkpoint when prompted.
 2. Run the despeckle / Grad-CAM / severity-map helper cells, then the `analyze_image()` cell — this builds the full pipeline.
-3. To evaluate on the dataset or retrain, run the Kaggle download cell and the cells below it.
-4. Run the last cell to launch the **Gradio demo** — it gives you a local URL (and a shareable public link via `share=True`) where you can upload a SAR image chip and see the live classification, confidence, and severity overlay.
+3. To evaluate on the dataset or retrain, run the Kaggle download cell (you'll need your own `kaggle.json`) and the cells below it.
+4. Run the last cell to launch the **Gradio demo** — it gives you a shareable public link where you can upload a SAR image chip and see the live classification, confidence, and severity overlay.
 
 ### Quick usage (in code)
 
