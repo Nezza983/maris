@@ -1,0 +1,7 @@
+flask
+flask-cors
+pandas
+numpy
+opencv-python-headless
+torch
+torchvision

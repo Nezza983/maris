@@ -262,6 +262,17 @@
 
                     </span>
 
+                    <div class="dashboard-coords" style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                        <input type="number" id="inputLat" placeholder="Latitude" value="15.35" step="0.0001" style="width:110px;">
+                        <input type="number" id="inputLon" placeholder="Longitude" value="73.95" step="0.0001" style="width:110px;">
+                        <input type="text" id="inputTime" placeholder="Timestamp (ISO)" value="2026-08-27T06:00:00" style="width:190px;">
+                    </div>
+
+                    <button id="runAnalysis" style="margin-top:12px;">
+                        RUN MARIS ANALYSIS
+                    </button>
+
+                    <span id="analysisError" style="color:#ff6b6b; display:block; margin-top:8px;"></span>
 
                 </div>
 
@@ -504,6 +515,7 @@
 
                     </div>
 
+                    <div id="vesselList" class="vessel-list" style="margin-top:16px;"></div>
 
                 </div>
 

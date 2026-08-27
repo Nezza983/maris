@@ -1,250 +1,204 @@
 // ==========================================
-// MARIS - FRONTEND
+// MARIS - FRONTEND (integrated with real backend)
 // ==========================================
 
+const API_BASE = window.MARIS_API_BASE || "http://127.0.0.1:5000";
 
 // ==========================================
-// START ANALYSIS BUTTON
+// START ANALYSIS BUTTON (hero CTA -> scroll)
 // ==========================================
 
-document
-    .getElementById("startAnalysis")
-    .addEventListener("click", function () {
+document.getElementById("startAnalysis").addEventListener("click", function () {
+    document.getElementById("analysis").scrollIntoView({ behavior: "smooth" });
+});
 
-        document
-            .getElementById("analysis")
-            .scrollIntoView({
-                behavior: "smooth"
-            });
+// ==========================================
+// LEAFLET MAP (single instance)
+// ==========================================
 
+const DEFAULT_CENTER = [15.35, 73.95];
+
+const map = L.map("marisMap", { zoomControl: true }).setView(DEFAULT_CENTER, 7);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+// Layer group so we can clear + redraw on each new analysis
+let resultLayer = L.layerGroup().addTo(map);
+
+function spillIcon() {
+    return L.divIcon({
+        className: "maris-spill-marker",
+        html: `<div style="width:18px;height:18px;background:#4fc3c8;border:3px solid #071014;border-radius:50%;box-shadow:0 0 18px #4fc3c8;"></div>`,
+        iconSize: [18, 18],
+        iconAnchor: [9, 9]
     });
+}
 
+function sourceIcon() {
+    return L.divIcon({
+        className: "maris-source-marker",
+        html: `<div style="width:15px;height:15px;background:#ffffff;border:3px solid #071014;border-radius:50%;box-shadow:0 0 15px #ffffff;"></div>`,
+        iconSize: [15, 15],
+        iconAnchor: [7, 7]
+    });
+}
 
-// ==========================================
-// LEAFLET MAP
-// ==========================================
+function vesselIcon() {
+    return L.divIcon({
+        className: "maris-vessel-marker",
+        html: `<div style="width:12px;height:12px;background:#ffb74d;border:2px solid #071014;border-radius:3px;box-shadow:0 0 10px #ffb74d;"></div>`,
+        iconSize: [12, 12],
+        iconAnchor: [6, 6]
+    });
+}
 
-// DEMO coordinates
-// These will later come from the backend.
+function renderResultOnMap(result) {
+    resultLayer.clearLayers();
 
-const spillLocation = [15.35, 73.95];
+    const spillLatLng = [result.spill.latitude, result.spill.longitude];
+    const sourceLatLng = [result.source.latitude, result.source.longitude];
 
-const probableSource = [15.72, 73.48];
+    L.marker(spillLatLng, { icon: spillIcon() })
+        .addTo(resultLayer)
+        .bindPopup(`<strong>DETECTED SPILL</strong><br>Confidence: ${(result.detection.confidence * 100).toFixed(1)}%`);
 
-const driftPath = [
-    probableSource,
-    [15.62, 73.58],
-    [15.53, 73.68],
-    [15.45, 73.78],
-    spillLocation
-];
+    L.marker(sourceLatLng, { icon: sourceIcon() })
+        .addTo(resultLayer)
+        .bindPopup(`<strong>PROBABLE SOURCE</strong><br>Confidence: ${(result.source.confidence * 100).toFixed(0)}%<br>Radius: ${result.source.radius_km} km`);
 
+    L.circle(sourceLatLng, {
+        radius: result.source.radius_km * 1000,
+        color: "#ffffff",
+        weight: 1,
+        fillOpacity: 0.08
+    }).addTo(resultLayer);
 
-// Create map
+    // Forward drift trajectory (predicted future positions)
+    const driftPath = [spillLatLng, ...result.drift.predicted_positions.map(p => [p.latitude, p.longitude])];
+    L.polyline(driftPath, { color: "#4fc3c8", weight: 3, opacity: 0.85, dashArray: "8 8" }).addTo(resultLayer);
 
-const map = L.map("marisMap", {
-    zoomControl: true
-}).setView(spillLocation, 7);
+    // Backward trace line (spill -> probable source)
+    L.polyline([spillLatLng, sourceLatLng], { color: "#ffffff", weight: 2, opacity: 0.5, dashArray: "2 6" }).addTo(resultLayer);
 
+    // Vessel tracks (GeoJSON from Module 5)
+    if (result.vessel_tracks && result.vessel_tracks.features) {
+        L.geoJSON(result.vessel_tracks, {
+            style: { color: "#ffb74d", weight: 2, opacity: 0.7 }
+        }).addTo(resultLayer);
 
-// OpenStreetMap base layer
-
-const baseMap = L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-        attribution:
-            '&copy; OpenStreetMap contributors'
+        result.vessel_tracks.features.forEach(function (feature) {
+            const coords = feature.geometry.coordinates;
+            if (coords && coords.length) {
+                const last = coords[coords.length - 1];
+                L.marker([last[1], last[0]], { icon: vesselIcon() })
+                    .addTo(resultLayer)
+                    .bindPopup(`<strong>${feature.properties?.vessel_name || "Vessel"}</strong>`);
+            }
+        });
     }
-);
 
-baseMap.addTo(map);
-
-
-// ==========================================
-// SPILL MARKER
-// ==========================================
-
-const spillIcon = L.divIcon({
-
-    className: "maris-spill-marker",
-
-    html: `
-        <div style="
-            width:18px;
-            height:18px;
-            background:#4fc3c8;
-            border:3px solid #071014;
-            border-radius:50%;
-            box-shadow:0 0 18px #4fc3c8;
-        "></div>
-    `,
-
-    iconSize: [18, 18],
-
-    iconAnchor: [9, 9]
-
-});
-
-
-L.marker(
-    spillLocation,
-    {
-        icon: spillIcon
-    }
-)
-.addTo(map)
-.bindPopup(`
-    <strong>DETECTED SPILL</strong><br>
-    Demo incident location
-`);
-
-
-// ==========================================
-// PROBABLE SOURCE MARKER
-// ==========================================
-
-const sourceIcon = L.divIcon({
-
-    className: "maris-source-marker",
-
-    html: `
-        <div style="
-            width:15px;
-            height:15px;
-            background:#ffffff;
-            border:3px solid #071014;
-            border-radius:50%;
-            box-shadow:0 0 15px #ffffff;
-        "></div>
-    `,
-
-    iconSize: [15, 15],
-
-    iconAnchor: [7, 7]
-
-});
-
-
-L.marker(
-    probableSource,
-    {
-        icon: sourceIcon
-    }
-)
-.addTo(map)
-.bindPopup(`
-    <strong>PROBABLE SOURCE</strong><br>
-    Demo source location
-`);
-
-
-// ==========================================
-// DRIFT TRAJECTORY
-// ==========================================
-
-const trajectory = L.polyline(
-    driftPath,
-    {
-        color: "#4fc3c8",
-
-        weight: 3,
-
-        opacity: 0.85,
-
-        dashArray: "8 8"
-    }
-)
-.addTo(map);
-
-
-// ==========================================
-// FIT MAP TO TRAJECTORY
-// ==========================================
-
-map.fitBounds(
-    trajectory.getBounds(),
-    {
-        padding: [50, 50]
-    }
-);
-
-
-// ==========================================
-// DEMO DATA
-// ==========================================
-//
-// IMPORTANT:
-// This is temporary.
-//
-// Later:
-// Member 2 → detection
-// Member 3 → environment / currents
-// Member 4 → drift / age
-// Member 5 → vessel correlation
-//
-// will replace these values.
-// ==========================================
-
-const demoData = {
-
-    status: "DEMO",
-
-    confidence: "—",
-
-    oilAge: "—",
-
-    movementDirection: "—",
-
-    oceanCurrent: "—",
-
-    wind: "—"
-
-};
-
+    const bounds = L.latLngBounds([spillLatLng, sourceLatLng]);
+    map.fitBounds(bounds, { padding: [60, 60] });
+}
 
 // ==========================================
 // IMAGE UPLOAD
 // ==========================================
 
-document
-    .getElementById("imageUpload")
-    .addEventListener("change", function (event) {
+let selectedFile = null;
 
-        const file = event.target.files[0];
+document.getElementById("imageUpload").addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-        if (!file) {
+    selectedFile = file;
+    document.getElementById("fileName").textContent = file.name;
+    document.getElementById("dashboardStatus").textContent = "READY";
+    document.getElementById("dashboardConfidence").textContent = "—";
+});
+
+// ==========================================
+// RUN ANALYSIS -> call real backend
+// ==========================================
+
+document.getElementById("runAnalysis").addEventListener("click", async function () {
+    const errorEl = document.getElementById("analysisError");
+    errorEl.textContent = "";
+
+    if (!selectedFile) {
+        errorEl.textContent = "Select a SAR image first.";
+        return;
+    }
+
+    document.getElementById("dashboardStatus").textContent = "ANALYZING...";
+
+    const formData = new FormData();
+    formData.append("image", selectedFile);
+    formData.append("latitude", document.getElementById("inputLat").value || "15.35");
+    formData.append("longitude", document.getElementById("inputLon").value || "73.95");
+    formData.append("timestamp", document.getElementById("inputTime").value || new Date().toISOString());
+
+    try {
+        const response = await fetch(`${API_BASE}/api/analyze`, {
+            method: "POST",
+            body: formData
+        });
+        const result = await response.json();
+
+        if (!result.success) {
+            errorEl.textContent = result.error || "Analysis failed.";
+            document.getElementById("dashboardStatus").textContent = "ERROR";
             return;
         }
 
-        document
-            .getElementById("fileName")
-            .textContent = file.name;
-
-        document
-            .getElementById("dashboardStatus")
-            .textContent = "READY";
-
-        document
-            .getElementById("dashboardConfidence")
-            .textContent = "—";
-
-    });
-    // ==========================================
-// MARIS LIVE MAP
-// ==========================================
-
-const marisMap = L.map("marisMap").setView(
-    [15.35, 73.95],
-    7
-);
-
-
-// OpenStreetMap base layer
-
-L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-        attribution:
-            '&copy; OpenStreetMap contributors'
+        renderResult(result);
+    } catch (err) {
+        errorEl.textContent = "Could not reach MARIS backend: " + err.message;
+        document.getElementById("dashboardStatus").textContent = "ERROR";
     }
-).addTo(marisMap);
+});
+
+function renderResult(result) {
+    document.getElementById("dashboardStatus").textContent = result.status ? result.status.toUpperCase() : "COMPLETE";
+    document.getElementById("incidentId").textContent = result.investigation_id;
+    document.getElementById("dashboardConfidence").textContent = (result.detection.confidence * 100).toFixed(1) + "%";
+
+    if (!result.detection.oil_detected) {
+        document.getElementById("dashboardStatus").textContent = "NO SPILL DETECTED";
+        return;
+    }
+
+    // Source / vessel card
+    document.getElementById("sourceLat").textContent = result.source.latitude.toFixed(4);
+    document.getElementById("sourceLon").textContent = result.source.longitude.toFixed(4);
+    document.getElementById("sourceConfidence").textContent = (result.source.confidence * 100).toFixed(0) + "%";
+
+    if (result.vessels && result.vessels.length > 0) {
+        const top = result.vessels[0];
+        document.getElementById("sourceVessel").textContent =
+            `Top Candidate: ${top.vessel_name} (${(top.score * 100).toFixed(0)}%)`;
+    } else {
+        document.getElementById("sourceVessel").textContent = "No AIS candidates in range";
+    }
+
+    // Drift analysis card
+    document.getElementById("oceanCurrent").textContent = result.environment.current_speed_ms + " m/s";
+    document.getElementById("windSpeed").textContent = result.environment.wind_speed_ms + " m/s";
+    const bearing = Math.atan2(result.environment.wind_u, result.environment.wind_v) * (180 / Math.PI);
+    document.getElementById("movementDirection").textContent = ((bearing + 360) % 360).toFixed(0) + "°";
+    document.getElementById("oilAge").textContent = "~6 hr (est.)";
+
+    // Vessel list panel
+    const vesselList = document.getElementById("vesselList");
+    vesselList.innerHTML = "";
+    (result.vessels || []).forEach(function (v) {
+        const row = document.createElement("div");
+        row.style.cssText = "display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.08); font-size:0.85rem;";
+        row.innerHTML = `<span>#${v.rank} ${v.vessel_name} (${v.vessel_id})</span><span>${(v.score * 100).toFixed(0)}%</span>`;
+        vesselList.appendChild(row);
+    });
+
+    renderResultOnMap(result);
+}
