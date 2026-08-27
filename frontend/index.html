@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MARIS | Maritime Intelligence System</title>
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Leaflet Map -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+</head>
+
+
+<body>
+
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
+    <header class="navbar">
+
+        <div class="logo">
+
+            <span class="logo-mark">M</span>
+
+            <div>
+
+                <h1>MARIS</h1>
+
+                <p>Maritime Intelligence System</p>
+
+            </div>
+
+        </div>
+
+
+        <nav>
+
+            <a href="#home">Home</a>
+
+            <a href="#analysis">Analysis</a>
+
+            <a href="#about">About</a>
+
+        </nav>
+
+    </header>
+
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main>
+
+
+        <!-- =========================
+             HERO SECTION
+        ========================== -->
+
+        <section id="home" class="hero">
+
+
+            <div class="hero-content">
+
+
+                <div class="status">
+
+                    <span></span>
+
+                    SYSTEM READY
+
+                </div>
+
+
+                <h2>
+
+                    Detect.
+
+                    <span>Trace.</span>
+
+                    Protect.
+
+                </h2>
+
+
+                <p>
+
+                    An intelligent maritime platform for detecting
+                    oil spills, analyzing their movement, and tracing
+                    their probable source.
+
+                </p>
+
+
+                <button id="startAnalysis">
+
+                    Start Analysis
+
+                    <span>→</span>
+
+                </button>
+
+
+            </div>
+
+
+
+            <div class="hero-visual">
+
+
+                <div class="radar">
+
+
+                    <div class="radar-ring ring-1"></div>
+
+                    <div class="radar-ring ring-2"></div>
+
+                    <div class="radar-ring ring-3"></div>
+
+
+                    <div class="radar-line"></div>
+
+
+                    <div class="radar-point point-1"></div>
+
+                    <div class="radar-point point-2"></div>
+
+                    <div class="radar-point point-3"></div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =========================
+             MARIS INVESTIGATION DASHBOARD
+        ========================== -->
+
+        <section id="analysis" class="dashboard-section">
+
+
+            <!-- Dashboard Header -->
+
+            <div class="dashboard-header">
+
+
+                <div>
+
+
+                    <span class="section-label">
+
+                        01 / INCIDENT ANALYSIS
+
+                    </span>
+
+
+                    <h2>
+
+                        Maritime Investigation
+
+                    </h2>
+
+
+                    <p>
+
+                        Satellite-based oil spill detection,
+                        drift analysis and probable source identification.
+
+                    </p>
+
+
+                </div>
+
+
+                <div class="system-status">
+
+                    <span></span>
+
+                    SYSTEM ACTIVE
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =========================
+                 INCIDENT STATUS
+            ========================== -->
+
+            <div class="incident-status">
+
+
+                <div class="incident-main">
+
+
+                    <div class="incident-indicator">
+
+                        <span></span>
+
+                        ANALYSIS READY
+
+                    </div>
+
+
+                    <h3>
+
+                        Awaiting Satellite Analysis
+
+                    </h3>
+
+
+                    <p>
+
+                        Upload a Sentinel-1 SAR image to begin
+                        oil spill detection.
+
+                    </p>
+
+
+                    <!-- SAR Image Upload -->
+
+                    <label class="dashboard-upload">
+
+                        SELECT SAR IMAGE
+
+                        <input
+                            type="file"
+                            id="imageUpload"
+                            accept="image/*"
+                            hidden
+                        >
+
+                    </label>
+
+
+                    <span
+                        id="fileName"
+                        class="dashboard-file"
+                    >
+
+                        No image selected
+
+                    </span>
+
+
+                </div>
+
+
+
+                <!-- Incident Metrics -->
+
+                <div class="incident-metrics">
+
+
+                    <div>
+
+                        <span>CONFIDENCE</span>
+
+                        <strong id="dashboardConfidence">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>INCIDENT ID</span>
+
+                        <strong id="incidentId">
+                            MARIS-001
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>STATUS</span>
+
+                        <strong id="dashboardStatus">
+                            PENDING
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =========================
+                 LIVE MAP
+            ========================== -->
+
+            <div class="map-panel">
+
+
+                <div class="map-header">
+
+
+                    <div>
+
+
+                        <span class="section-label">
+
+                            LIVE GEOSPATIAL VIEW
+
+                        </span>
+
+
+                        <h3>
+
+                            Incident Location & Drift
+
+                        </h3>
+
+
+                    </div>
+
+
+
+                    <div class="map-controls">
+
+
+                        <button
+                            class="map-control active"
+                            type="button"
+                        >
+
+                            MAP
+
+                        </button>
+
+
+                        <button
+                            class="map-control"
+                            type="button"
+                        >
+
+                            SATELLITE
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- Leaflet Map -->
+
+                <div id="marisMap"></div>
+
+
+
+                <!-- Map Legend -->
+
+                <div class="map-legend">
+
+
+                    <div>
+
+                        <span class="legend-dot spill-dot"></span>
+
+                        Detected Spill
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="legend-dot source-dot"></span>
+
+                        Probable Source
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="legend-line"></span>
+
+                        Estimated Drift
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =========================
+                 PRIORITY INFORMATION
+            ========================== -->
+
+            <div class="priority-grid">
+
+
+                <!-- Probable Source -->
+
+                <div class="dashboard-card source-card">
+
+
+                    <div class="card-top">
+
+
+                        <span class="section-label">
+
+                            PROBABLE SOURCE
+
+                        </span>
+
+
+                        <span class="card-status">
+
+                            AWAITING
+
+                        </span>
+
+
+                    </div>
+
+
+                    <h3 id="sourceVessel">
+
+                        Vessel Correlation Pending
+
+                    </h3>
+
+
+                    <p>
+
+                        Vessel attribution will appear
+                        after AIS correlation.
+
+                    </p>
+
+
+
+                    <div class="source-details">
+
+
+                        <div>
+
+                            <span>LATITUDE</span>
+
+                            <strong id="sourceLat">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>LONGITUDE</span>
+
+                            <strong id="sourceLon">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>CONFIDENCE</span>
+
+                            <strong id="sourceConfidence">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- Drift Analysis -->
+
+                <div class="dashboard-card">
+
+
+                    <div class="card-top">
+
+
+                        <span class="section-label">
+
+                            DRIFT ANALYSIS
+
+                        </span>
+
+
+                        <span class="card-status">
+
+                            PENDING
+
+                        </span>
+
+
+                    </div>
+
+
+
+                    <div class="data-list">
+
+
+                        <div>
+
+                            <span>
+                                ESTIMATED OIL AGE
+                            </span>
+
+                            <strong id="oilAge">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                MOVEMENT DIRECTION
+                            </span>
+
+                            <strong id="movementDirection">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                OCEAN CURRENT
+                            </span>
+
+                            <strong id="oceanCurrent">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                WIND
+                            </span>
+
+                            <strong id="windSpeed">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =========================
+                 SATELLITE EVIDENCE
+            ========================== -->
+
+            <div class="evidence-section">
+
+
+                <div class="dashboard-heading">
+
+
+                    <span class="section-label">
+
+                        SATELLITE EVIDENCE
+
+                    </span>
+
+
+                    <h3>
+
+                        Detection Evidence
+
+                    </h3>
+
+
+                </div>
+
+
+
+                <div class="evidence-grid">
+
+
+                    <!-- SAR Image -->
+
+                    <div class="evidence-card">
+
+
+                        <div class="evidence-placeholder">
+
+
+                            <span>◈</span>
+
+
+                            <p>
+
+                                SAR IMAGE
+
+                            </p>
+
+
+                            <small>
+
+                                Awaiting Sentinel-1 imagery
+
+                            </small>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- AI Detection -->
+
+                    <div class="evidence-card">
+
+
+                        <div class="evidence-placeholder">
+
+
+                            <span>◉</span>
+
+
+                            <p>
+
+                                AI DETECTION MASK
+
+                            </p>
+
+
+                            <small>
+
+                                Awaiting model output
+
+                            </small>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =========================
+                 VESSEL CORRELATION
+            ========================== -->
+
+            <div class="vessel-section">
+
+
+                <div class="dashboard-heading">
+
+
+                    <span class="section-label">
+
+                        VESSEL CORRELATION
+
+                    </span>
+
+
+                    <h3>
+
+                        Potential Sources
+
+                    </h3>
+
+
+                </div>
+
+
+
+                <div class="vessel-table">
+
+
+                    <!-- Table Header -->
+
+                    <div class="vessel-row table-heading">
+
+
+                        <span>RANK</span>
+
+                        <span>VESSEL</span>
+
+                        <span>DISTANCE</span>
+
+                        <span>CORRELATION</span>
+
+
+                    </div>
+
+
+
+                    <!-- Vessel 01 -->
+
+                    <div class="vessel-row">
+
+
+                        <span>#01</span>
+
+
+                        <span class="pending">
+
+                            Awaiting AIS data
+
+                        </span>
+
+
+                        <span>—</span>
+
+
+                        <span>—</span>
+
+
+                    </div>
+
+
+
+                    <!-- Vessel 02 -->
+
+                    <div class="vessel-row">
+
+
+                        <span>#02</span>
+
+
+                        <span class="pending">
+
+                            Awaiting AIS data
+
+                        </span>
+
+
+                        <span>—</span>
+
+
+                        <span>—</span>
+
+
+                    </div>
+
+
+
+                    <!-- Vessel 03 -->
+
+                    <div class="vessel-row">
+
+
+                        <span>#03</span>
+
+
+                        <span class="pending">
+
+                            Awaiting AIS data
+
+                        </span>
+
+
+                        <span>—</span>
+
+
+                        <span>—</span>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =========================
+             ABOUT SECTION
+        ========================== -->
+
+        <section id="about" class="about-section">
+
+
+            <span class="section-label">
+
+                02 / ABOUT MARIS
+
+            </span>
+
+
+            <h2>
+
+                From Detection<br>
+
+                to Source.
+
+            </h2>
+
+
+            <p>
+
+                MARIS combines satellite imagery, artificial
+                intelligence, environmental data and vessel
+                information to support oil-spill investigation.
+
+            </p>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+
+        <div>
+
+            <strong>MARIS</strong>
+
+            <span> | Latte Logic</span>
+
+        </div>
+
+
+        <p>
+
+            Maritime Intelligence & Response System
+
+        </p>
+
+
+    </footer>
+
+
+
+    <!-- =========================
+         LEAFLET JAVASCRIPT
+    ========================== -->
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+
+    <!-- MARIS JAVASCRIPT -->
+
+    <script src="script.js"></script>
+
+
+</body>
+
+</html>
