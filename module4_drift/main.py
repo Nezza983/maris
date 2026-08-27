@@ -66,7 +66,8 @@ def run_module_04_pipeline():
 
         logger.info("\n[STEP 1] Loading input data and configuration...")
 
-        spill_data = config.DETECTED_SPILL.copy()
+        with open("integration_spill_input.json", "r") as f:
+            spill_data = json.load(f)
 
         spill_lat = spill_data["latitude"]
         spill_lon = spill_data["longitude"]
@@ -75,7 +76,7 @@ def run_module_04_pipeline():
             spill_data["timestamp"].replace("Z", "+00:00")
         ).replace(tzinfo=None)
 
-        spill_confidence = spill_data["confidence"]
+        spill_confidence = spill_data.get("confidence",0.0)
         initial_area = spill_data.get("area_km2", 8.5)
 
         logger.info(
@@ -355,7 +356,7 @@ def run_module_04_pipeline():
         current_pos = model.get_current_position()
 
         output = {
-            "spill_id": spill_data["spill_id"],
+            "spill_id": spill_data.get("spill_id", spill_data.get("image_id", "unknown")),
 
             "timestamp": (
                 datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
