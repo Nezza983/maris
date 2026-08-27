@@ -1,0 +1,12 @@
+{
+  "origin_zone": {
+    "type": "circle",
+    "center": [-18.29, 147.70],
+    "radius_km": 15
+  },
+  "time_window": {
+    "start": "2026-08-20T10:00:00Z",
+    "end": "2026-08-20T18:00:00Z"
+  },
+  "confidence": 0.82
+}
