@@ -186,7 +186,7 @@ document.getElementById("runAnalysis").addEventListener("click", async function 
     const formData = new FormData();
     formData.append("image", selectedFile);
     formData.append("latitude", document.getElementById("inputLat").value || "15.35");
-    formData.append("longitude", document.getElementById("inputLon").value || "73.95");
+    formData.append("longitude", document.getElementById("inputLon").value || "73.55");
     formData.append("timestamp", document.getElementById("inputTime").value || new Date().toISOString());
 
     const fetchPromise = fetch(`${API_BASE}/api/analyze`, {
