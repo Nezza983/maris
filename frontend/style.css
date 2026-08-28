@@ -790,7 +790,7 @@ footer strong {
 
     overflow: hidden;
 
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 
@@ -872,6 +872,18 @@ footer strong {
     color: #dce7e8 !important;
 
     border-color: rgba(255,255,255,0.1) !important;
+}
+
+
+.leaflet-control-attribution {
+    background: rgba(7,16,20,0.85) !important;
+
+    color: #637579 !important;
+}
+
+
+.leaflet-control-attribution a {
+    color: #4fc3c8 !important;
 }
 
 
@@ -1034,158 +1046,6 @@ footer strong {
 
 
 /* =========================================
-   EVIDENCE
-========================================= */
-
-.dashboard-heading {
-    margin-bottom: 25px;
-}
-
-
-.dashboard-heading h3 {
-    font-family: 'Space Grotesk', sans-serif;
-
-    font-size: 25px;
-
-    margin-top: 8px;
-}
-
-
-.evidence-section {
-    margin-bottom: 80px;
-}
-
-
-.evidence-grid {
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 20px;
-}
-
-
-.evidence-card {
-    height: 300px;
-
-    background: #0b181d;
-
-    border: 1px solid rgba(255,255,255,0.07);
-
-    border-radius: 7px;
-
-    overflow: hidden;
-}
-
-
-.evidence-placeholder {
-    height: 100%;
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: center;
-
-    align-items: center;
-
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(79,195,200,0.05),
-            transparent 60%
-        );
-
-    color: #637579;
-
-    text-align: center;
-}
-
-
-.evidence-placeholder span {
-    color: #4fc3c8;
-
-    font-size: 35px;
-
-    margin-bottom: 15px;
-}
-
-
-.evidence-placeholder p {
-    color: #91a3a7;
-
-    font-size: 11px;
-
-    letter-spacing: 2px;
-}
-
-
-.evidence-placeholder small {
-    margin-top: 8px;
-
-    color: #536468;
-
-    font-size: 10px;
-}
-
-
-/* =========================================
-   VESSEL CORRELATION
-========================================= */
-
-.vessel-section {
-    margin-bottom: 50px;
-}
-
-
-.vessel-table {
-    background: #0b181d;
-
-    border: 1px solid rgba(255,255,255,0.07);
-
-    border-radius: 7px;
-
-    overflow: hidden;
-}
-
-
-.vessel-row {
-    display: grid;
-
-    grid-template-columns: 0.5fr 2fr 1fr 1fr;
-
-    align-items: center;
-
-    padding: 18px 25px;
-
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-
-    color: #dce7e8;
-
-    font-size: 12px;
-}
-
-
-.vessel-row:last-child {
-    border-bottom: none;
-}
-
-
-.table-heading {
-    color: #637579;
-
-    font-size: 8px;
-
-    letter-spacing: 1.5px;
-}
-
-
-.pending {
-    color: #637579;
-}
-
-
-/* =========================================
    RESPONSIVE DASHBOARD
 ========================================= */
 
@@ -1216,8 +1076,7 @@ footer strong {
     }
 
 
-    .priority-grid,
-    .evidence-grid {
+    .priority-grid {
         grid-template-columns: 1fr;
     }
 
@@ -1263,15 +1122,6 @@ footer strong {
         grid-template-columns: 1fr;
     }
 
-
-    .vessel-row {
-        grid-template-columns: 0.5fr 1.5fr 1fr 1fr;
-
-        font-size: 10px;
-
-        padding: 15px;
-    }
-
 }
 /* Dashboard upload */
 
@@ -1312,93 +1162,322 @@ footer strong {
 
     font-size: 9px;
 }
+
+
 /* =========================================
-   MARIS LIVE MAP
+   NEW: SHIP STRIP (decorative, scroll-friendly)
 ========================================= */
 
-.map-panel {
-    background: #0b181d;
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 7px;
+.ship-strip {
+    width: 100%;
+    height: 140px;
+
     overflow: hidden;
-    margin-bottom: 25px;
+
+    background: linear-gradient(180deg, #071014 0%, #081419 100%);
+
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
-.map-header {
-    padding: 25px 30px;
+.ship-strip-svg {
+    width: 100%;
+    height: 100%;
 
+    display: block;
+}
+
+.wave {
+    fill: rgba(79,195,200,0.06);
+}
+
+.wave-front {
+    fill: rgba(79,195,200,0.1);
+    animation: waveDrift 9s ease-in-out infinite;
+}
+
+.wave-back {
+    animation: waveDrift 13s ease-in-out infinite reverse;
+}
+
+@keyframes waveDrift {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-40px); }
+}
+
+.ship-group {
+    animation: shipSail 26s linear infinite;
+}
+
+@keyframes shipSail {
+    from { transform: translateX(-15%); }
+    to { transform: translateX(115%); }
+}
+
+.ship-bob {
+    animation: shipBob 4s ease-in-out infinite;
+}
+
+@keyframes shipBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+
+/* =========================================
+   NEW: CONTROL PANEL (coords + run button)
+========================================= */
+
+.control-panel {
     display: flex;
-    justify-content: space-between;
+
+    align-items: flex-end;
+
+    flex-wrap: wrap;
+
+    gap: 16px;
+
+    margin-top: 16px;
+}
+
+
+.dashboard-coords {
+    display: flex;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+
+.coord-input {
+    background: #081419;
+
+    border: 1px solid rgba(255,255,255,0.1);
+
+    color: #dce7e8;
+
+    padding: 10px 12px;
+
+    border-radius: 4px;
+
+    font-size: 12px;
+
+    font-family: 'Inter', sans-serif;
+
+    width: 120px;
+
+    transition: 0.3s;
+}
+
+
+.coord-input-wide {
+    width: 200px;
+}
+
+
+.coord-input:focus {
+    outline: none;
+
+    border-color: #4fc3c8;
+}
+
+
+.run-analysis-btn {
+    padding: 13px 22px;
+
+    background: #4fc3c8;
+    color: #071014;
+
+    border: none;
+    border-radius: 5px;
+
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+
+    cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+
+    transition: 0.3s;
+
+    white-space: nowrap;
+}
+
+
+.run-analysis-btn span {
+    transition: transform 0.3s;
+}
+
+
+.run-analysis-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+
+    box-shadow: 0 10px 30px rgba(79,195,200,0.25);
+}
+
+
+.run-analysis-btn:hover:not(:disabled) span {
+    transform: translateX(4px);
+}
+
+
+.run-analysis-btn:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+
+    transform: none;
+    box-shadow: none;
+}
+
+
+.analysis-error {
+    color: #ff6b6b;
+
+    display: block;
+
+    margin-top: 10px;
+
+    font-size: 12px;
+}
+
+
+/* =========================================
+   NEW: PIPELINE LOADING STEPS
+========================================= */
+
+.analysis-steps {
+    display: none;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+
+.analysis-steps.active {
+    display: flex;
+}
+
+
+.step-row {
+    display: flex;
+
     align-items: center;
 
-    border-bottom: 1px solid rgba(255,255,255,0.07);
+    gap: 12px;
+
+    color: #536468;
+
+    font-size: 12px;
+
+    letter-spacing: 0.5px;
+
+    transition: color 0.3s;
 }
 
-.map-header h3 {
-    font-family: 'Space Grotesk', sans-serif;
 
-    font-size: 20px;
-
-    margin-top: 7px;
-}
-
-.map-status {
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
-    color: #4fc3c8;
-
-    font-size: 9px;
-
-    letter-spacing: 1.5px;
-}
-
-.map-status span {
-    width: 6px;
-    height: 6px;
+.step-dot {
+    width: 8px;
+    height: 8px;
 
     border-radius: 50%;
 
+    background: #263136;
+
+    flex-shrink: 0;
+
+    transition: 0.3s;
+}
+
+
+.step-row.step-active {
+    color: #dce7e8;
+}
+
+
+.step-row.step-active .step-dot {
     background: #4fc3c8;
 
     box-shadow: 0 0 10px #4fc3c8;
+
+    animation: stepPulse 1s ease-in-out infinite;
 }
 
 
-/* Actual Leaflet map */
-
-#marisMap {
-    width: 100%;
-    height: 500px;
-
-    background: #081419;
+.step-row.step-done {
+    color: #4fc3c8;
 }
 
 
-/* Leaflet dark controls */
+.step-row.step-done .step-dot {
+    background: #4fc3c8;
 
-.leaflet-container {
-    background: #081419;
+    box-shadow: none;
 
-    font-family: 'Inter', sans-serif;
+    animation: none;
 }
 
-.leaflet-control-zoom a {
-    background: #0b181d !important;
 
-    color: #dce7e8 !important;
-
-    border-color: rgba(255,255,255,0.1) !important;
+@keyframes stepPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.6; }
 }
 
-.leaflet-control-attribution {
-    background: rgba(7,16,20,0.85) !important;
 
-    color: #637579 !important;
+/* =========================================
+   NEW: SCROLL REVEAL
+========================================= */
+
+.reveal {
+    opacity: 0;
+
+    transform: translateY(30px);
+
+    transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
-.leaflet-control-attribution a {
-    color: #4fc3c8 !important;
+
+.reveal.in-view {
+    opacity: 1;
+
+    transform: translateY(0);
+}
+
+
+/* =========================================
+   NEW RESPONSIVE ADDITIONS
+========================================= */
+
+@media (max-width: 600px) {
+
+    .ship-strip {
+        height: 100px;
+    }
+
+    .control-panel {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .run-analysis-btn {
+        justify-content: center;
+    }
+
+    .coord-input,
+    .coord-input-wide {
+        width: 100%;
+    }
+
 }

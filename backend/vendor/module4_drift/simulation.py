@@ -175,4 +175,8 @@ def run_drift_and_trace(
         "predicted_positions": predicted_positions,
         "trajectory": trajectory,
         "drift_vector_ms": {"u": round(eff_u, 4), "v": round(eff_v, 4)},
+        "oil_age_hours": lookback_hours,
+        "oil_age_method": "assumed_lookback_window",
+        "oil_age_confidence": round(min(0.5, confidence), 2),  # deliberately capped — this is an assumed window, not a measured age
+        "oil_age_note": "Estimated as the backward-trace lookback window, not derived from spill area growth. A validated area-growth-based estimate (Fay spreading model) is designed but not yet wired into the live pipeline.",
     }

@@ -120,11 +120,59 @@ document.getElementById("imageUpload").addEventListener("change", function (even
 });
 
 // ==========================================
+// PIPELINE LOADING STEP ANIMATION
+// ==========================================
+
+const ANALYSIS_STEPS = ["upload", "detect", "env", "drift", "ais", "report"];
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function resetSteps() {
+    ANALYSIS_STEPS.forEach(function (step) {
+        const row = document.querySelector(`.step-row[data-step="${step}"]`);
+        row.classList.remove("step-active", "step-done");
+    });
+}
+
+// Runs the cosmetic step-by-step readout, but the FINAL step genuinely
+// waits on the real backend response before marking itself done.
+async function playStepAnimation(fetchPromise) {
+    const stepsEl = document.getElementById("analysisSteps");
+    stepsEl.classList.add("active");
+    resetSteps();
+
+    for (let i = 0; i < ANALYSIS_STEPS.length - 1; i++) {
+        const row = document.querySelector(`.step-row[data-step="${ANALYSIS_STEPS[i]}"]`);
+        row.classList.add("step-active");
+        await sleep(650);
+        row.classList.remove("step-active");
+        row.classList.add("step-done");
+    }
+
+    const lastStep = ANALYSIS_STEPS[ANALYSIS_STEPS.length - 1];
+    const lastRow = document.querySelector(`.step-row[data-step="${lastStep}"]`);
+    lastRow.classList.add("step-active");
+
+    const result = await fetchPromise;
+
+    lastRow.classList.remove("step-active");
+    lastRow.classList.add("step-done");
+
+    await sleep(300);
+    stepsEl.classList.remove("active");
+
+    return result;
+}
+
+// ==========================================
 // RUN ANALYSIS -> call real backend
 // ==========================================
 
 document.getElementById("runAnalysis").addEventListener("click", async function () {
     const errorEl = document.getElementById("analysisError");
+    const runBtn = document.getElementById("runAnalysis");
     errorEl.textContent = "";
 
     if (!selectedFile) {
@@ -132,6 +180,7 @@ document.getElementById("runAnalysis").addEventListener("click", async function 
         return;
     }
 
+    runBtn.disabled = true;
     document.getElementById("dashboardStatus").textContent = "ANALYZING...";
 
     const formData = new FormData();
@@ -140,12 +189,13 @@ document.getElementById("runAnalysis").addEventListener("click", async function 
     formData.append("longitude", document.getElementById("inputLon").value || "73.95");
     formData.append("timestamp", document.getElementById("inputTime").value || new Date().toISOString());
 
+    const fetchPromise = fetch(`${API_BASE}/api/analyze`, {
+        method: "POST",
+        body: formData
+    }).then(res => res.json());
+
     try {
-        const response = await fetch(`${API_BASE}/api/analyze`, {
-            method: "POST",
-            body: formData
-        });
-        const result = await response.json();
+        const result = await playStepAnimation(fetchPromise);
 
         if (!result.success) {
             errorEl.textContent = result.error || "Analysis failed.";
@@ -157,6 +207,8 @@ document.getElementById("runAnalysis").addEventListener("click", async function 
     } catch (err) {
         errorEl.textContent = "Could not reach MARIS backend: " + err.message;
         document.getElementById("dashboardStatus").textContent = "ERROR";
+    } finally {
+        runBtn.disabled = false;
     }
 });
 
@@ -188,7 +240,9 @@ function renderResult(result) {
     document.getElementById("windSpeed").textContent = result.environment.wind_speed_ms + " m/s";
     const bearing = Math.atan2(result.environment.wind_u, result.environment.wind_v) * (180 / Math.PI);
     document.getElementById("movementDirection").textContent = ((bearing + 360) % 360).toFixed(0) + "°";
-    document.getElementById("oilAge").textContent = "~6 hr (est.)";
+    const ageHrs = result.drift.oil_age_hours;
+    document.getElementById("oilAge").textContent = ageHrs != null ? `~${ageHrs} hr (est.)` : "—";
+    document.getElementById("oilAge").title = result.drift.oil_age_note || "";
 
     // Vessel list panel
     const vesselList = document.getElementById("vesselList");
@@ -202,3 +256,25 @@ function renderResult(result) {
 
     renderResultOnMap(result);
 }
+
+// ==========================================
+// SCROLL REVEAL
+// ==========================================
+
+document.addEventListener("DOMContentLoaded", function () {
+    const revealEls = document.querySelectorAll(".reveal");
+
+    const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("in-view");
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+
+    revealEls.forEach(function (el, index) {
+        el.style.transitionDelay = (index % 4) * 0.08 + "s";
+        observer.observe(el);
+    });
+});

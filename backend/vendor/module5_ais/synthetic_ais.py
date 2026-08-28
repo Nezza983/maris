@@ -149,7 +149,7 @@ def generate_synthetic_ais(
     # the window, on a clean 5-minute reporting cadence. ---
     a_start = window_mid - timedelta(hours=2)
     approach = (center_lat - _km_to_deg_lat(25), center_lon - _km_to_deg_lon(25, center_lat))
-    depart = (center_lat + _km_to_deg_lat(20), center_lon + _km_to_deg_lon(20, center_lat))
+    depart = (center_lat + _km_to_deg_lat(20), center_lon - _km_to_deg_lon(20, center_lat))
     tracks.append(
         _straight_track(
             mmsi="419000001",
@@ -192,11 +192,11 @@ def generate_synthetic_ais(
     # timing, but stays roughly 35-40 km from the origin the whole time. ---
     c_start_point = (
         center_lat + _km_to_deg_lat(38),
-        center_lon + _km_to_deg_lon(15, center_lat),
+        center_lon - _km_to_deg_lon(15, center_lat),
     )
     c_end_point = (
         center_lat + _km_to_deg_lat(35),
-        center_lon + _km_to_deg_lon(28, center_lat),
+        center_lon - _km_to_deg_lon(28, center_lat),
     )
     tracks.append(
         _straight_track(
@@ -218,7 +218,7 @@ def generate_synthetic_ais(
     d_start = window_mid - timedelta(hours=1, minutes=30)
     d_approach = (
         center_lat - _km_to_deg_lat(15),
-        center_lon + _km_to_deg_lon(18, center_lat),
+        center_lon - _km_to_deg_lon(18, center_lat),
     )
     d_depart = (
         center_lat + _km_to_deg_lat(2),
@@ -251,8 +251,8 @@ def generate_synthetic_ais(
         (
             "419000010",
             "MV HARBOUR LINK",
-            (center_lat + _km_to_deg_lat(55), center_lon + _km_to_deg_lon(10, center_lat)),
-            (center_lat + _km_to_deg_lat(50), center_lon + _km_to_deg_lon(25, center_lat)),
+            (center_lat + _km_to_deg_lat(55), center_lon - _km_to_deg_lon(10, center_lat)),
+            (center_lat + _km_to_deg_lat(50), center_lon - _km_to_deg_lon(25, center_lat)),
             window_start - timedelta(hours=1),
             9.5,
         ),
@@ -260,15 +260,15 @@ def generate_synthetic_ais(
             "419000011",
             "MV DELTA VOYAGER",
             (center_lat - _km_to_deg_lat(60), center_lon - _km_to_deg_lon(5, center_lat)),
-            (center_lat - _km_to_deg_lat(45), center_lon + _km_to_deg_lon(8, center_lat)),
+            (center_lat - _km_to_deg_lat(45), center_lon - _km_to_deg_lon(8, center_lat)),
             window_start + timedelta(hours=2),
             12.0,
         ),
         (
             "419000012",
             "MV OCEAN PIONEER",
-            (center_lat + _km_to_deg_lat(8), center_lon + _km_to_deg_lon(50, center_lat)),
-            (center_lat - _km_to_deg_lat(5), center_lon + _km_to_deg_lon(60, center_lat)),
+            (center_lat + _km_to_deg_lat(8), center_lon - _km_to_deg_lon(50, center_lat)),
+            (center_lat - _km_to_deg_lat(5), center_lon - _km_to_deg_lon(60, center_lat)),
             window_start + timedelta(hours=1),
             13.5,
         ),

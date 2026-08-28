@@ -153,6 +153,9 @@ def analyze():
             "drift": {
                 "predicted_positions": module4_output["predicted_positions"],
                 "trajectory": module4_output["trajectory"],
+                "oil_age_hours": module4_output.get("oil_age_hours"),
+                "oil_age_confidence": module4_output.get("oil_age_confidence"),
+                "oil_age_note": module4_output.get("oil_age_note"),
             },
             "source": {
                 "latitude": module4_output["origin_zone"]["center"][0],
@@ -206,4 +209,4 @@ def _run_module5(module4_output: dict) -> dict:
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=False)

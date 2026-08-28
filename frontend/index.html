@@ -31,13 +31,13 @@
 
         <div class="logo">
 
-            <span class="logo-mark">M</span>
+            <img src="logo.png" alt="MARIS logo" class="logo-mark" style="width:44px; height:44px; object-fit:contain; background:none; border:none; box-shadow:none; border-radius:8px;">
 
             <div>
 
                 <h1>MARIS</h1>
 
-                <p>Maritime Intelligence System</p>
+                <p>Marine Intelligence & Surveillance System</p>
 
             </div>
 
@@ -97,9 +97,7 @@
 
                 <p>
 
-                    An intelligent maritime platform for detecting
-                    oil spills, analyzing their movement, and tracing
-                    their probable source.
+                    Smarter Detection, Cleaner Oceans.
 
                 </p>
 
@@ -149,6 +147,47 @@
         </section>
 
 
+        <!-- =========================
+             SHIP STRIP (decorative)
+        ========================== -->
+
+        <div class="ship-strip" aria-hidden="true">
+
+            <svg viewBox="0 0 1200 160" preserveAspectRatio="xMidYMid slice" class="ship-strip-svg">
+
+                <path class="wave wave-back" d="M0,112 Q150,92 300,112 T600,112 T900,112 T1200,112 V160 H0 Z"></path>
+                <path class="wave wave-front" d="M0,122 Q150,142 300,122 T600,122 T900,122 T1200,122 V160 H0 Z"></path>
+
+                <g class="ship-group">
+                    <g class="ship-bob">
+
+                        <!-- hull -->
+                        <path d="M40,95 L360,95 L340,120 L60,120 Z" fill="#0b181d" stroke="#4fc3c8" stroke-width="2"/>
+
+                        <!-- lower deck block -->
+                        <rect x="200" y="75" width="90" height="20" fill="#0b181d" stroke="#4fc3c8" stroke-width="2"/>
+
+                        <!-- bridge -->
+                        <rect x="120" y="65" width="60" height="30" fill="#0b181d" stroke="#4fc3c8" stroke-width="2"/>
+                        <rect x="130" y="50" width="30" height="18" fill="#0b181d" stroke="#4fc3c8" stroke-width="2"/>
+
+                        <!-- mast -->
+                        <line x1="145" y1="50" x2="145" y2="32" stroke="#4fc3c8" stroke-width="2"/>
+                        <circle cx="145" cy="30" r="2.5" fill="#4fc3c8"/>
+
+                        <!-- containers -->
+                        <rect x="205" y="80" width="16" height="15" fill="none" stroke="#4fc3c8" stroke-width="1.5"/>
+                        <rect x="225" y="80" width="16" height="15" fill="none" stroke="#4fc3c8" stroke-width="1.5"/>
+                        <rect x="245" y="80" width="16" height="15" fill="none" stroke="#4fc3c8" stroke-width="1.5"/>
+
+                    </g>
+                </g>
+
+            </svg>
+
+        </div>
+
+
 
         <!-- =========================
              MARIS INVESTIGATION DASHBOARD
@@ -159,7 +198,7 @@
 
             <!-- Dashboard Header -->
 
-            <div class="dashboard-header">
+            <div class="dashboard-header reveal">
 
 
                 <div>
@@ -207,7 +246,7 @@
                  INCIDENT STATUS
             ========================== -->
 
-            <div class="incident-status">
+            <div class="incident-status reveal">
 
 
                 <div class="incident-main">
@@ -262,17 +301,70 @@
 
                     </span>
 
-                    <div class="dashboard-coords" style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-                        <input type="number" id="inputLat" placeholder="Latitude" value="15.35" step="0.0001" style="width:110px;">
-                        <input type="number" id="inputLon" placeholder="Longitude" value="73.95" step="0.0001" style="width:110px;">
-                        <input type="text" id="inputTime" placeholder="Timestamp (ISO)" value="2026-08-27T06:00:00" style="width:190px;">
+
+                    <!-- Control panel: coords + run button -->
+
+                    <div class="control-panel">
+
+                        <div class="dashboard-coords">
+
+                            <input type="number" id="inputLat" class="coord-input" placeholder="Latitude" value="15.35" step="0.0001">
+
+                            <input type="number" id="inputLon" class="coord-input" placeholder="Longitude" value="73.555" step="0.0001">
+
+                            <input type="text" id="inputTime" class="coord-input coord-input-wide" placeholder="Timestamp (ISO)" value="2026-08-27T06:00:00">
+
+                        </div>
+
+                        <button id="runAnalysis" class="run-analysis-btn">
+
+                            RUN MARIS ANALYSIS
+
+                            <span>→</span>
+
+                        </button>
+
                     </div>
 
-                    <button id="runAnalysis" style="margin-top:12px;">
-                        RUN MARIS ANALYSIS
-                    </button>
 
-                    <span id="analysisError" style="color:#ff6b6b; display:block; margin-top:8px;"></span>
+                    <span id="analysisError" class="analysis-error"></span>
+
+
+                    <!-- Pipeline loading steps -->
+
+                    <div id="analysisSteps" class="analysis-steps">
+
+                        <div class="step-row" data-step="upload">
+                            <span class="step-dot"></span>
+                            <span class="step-label">Uploading SAR image</span>
+                        </div>
+
+                        <div class="step-row" data-step="detect">
+                            <span class="step-dot"></span>
+                            <span class="step-label">Running AI oil-spill detection</span>
+                        </div>
+
+                        <div class="step-row" data-step="env">
+                            <span class="step-dot"></span>
+                            <span class="step-label">Fetching wind &amp; ocean current data</span>
+                        </div>
+
+                        <div class="step-row" data-step="drift">
+                            <span class="step-dot"></span>
+                            <span class="step-label">Simulating drift &amp; tracing source</span>
+                        </div>
+
+                        <div class="step-row" data-step="ais">
+                            <span class="step-dot"></span>
+                            <span class="step-label">Cross-referencing AIS vessel data</span>
+                        </div>
+
+                        <div class="step-row" data-step="report">
+                            <span class="step-dot"></span>
+                            <span class="step-label">Compiling investigation report</span>
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -327,7 +419,7 @@
                  LIVE MAP
             ========================== -->
 
-            <div class="map-panel">
+            <div class="map-panel reveal">
 
 
                 <div class="map-header">
@@ -438,7 +530,7 @@
 
                 <!-- Probable Source -->
 
-                <div class="dashboard-card source-card">
+                <div class="dashboard-card source-card reveal">
 
 
                     <div class="card-top">
@@ -523,7 +615,7 @@
 
                 <!-- Drift Analysis -->
 
-                <div class="dashboard-card">
+                <div class="dashboard-card reveal">
 
 
                     <div class="card-top">
@@ -611,237 +703,6 @@
             </div>
 
 
-
-            <!-- =========================
-                 SATELLITE EVIDENCE
-            ========================== -->
-
-            <div class="evidence-section">
-
-
-                <div class="dashboard-heading">
-
-
-                    <span class="section-label">
-
-                        SATELLITE EVIDENCE
-
-                    </span>
-
-
-                    <h3>
-
-                        Detection Evidence
-
-                    </h3>
-
-
-                </div>
-
-
-
-                <div class="evidence-grid">
-
-
-                    <!-- SAR Image -->
-
-                    <div class="evidence-card">
-
-
-                        <div class="evidence-placeholder">
-
-
-                            <span>◈</span>
-
-
-                            <p>
-
-                                SAR IMAGE
-
-                            </p>
-
-
-                            <small>
-
-                                Awaiting Sentinel-1 imagery
-
-                            </small>
-
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- AI Detection -->
-
-                    <div class="evidence-card">
-
-
-                        <div class="evidence-placeholder">
-
-
-                            <span>◉</span>
-
-
-                            <p>
-
-                                AI DETECTION MASK
-
-                            </p>
-
-
-                            <small>
-
-                                Awaiting model output
-
-                            </small>
-
-
-                        </div>
-
-
-                    </div>
-
-
-                </div>
-
-
-            </div>
-
-
-
-            <!-- =========================
-                 VESSEL CORRELATION
-            ========================== -->
-
-            <div class="vessel-section">
-
-
-                <div class="dashboard-heading">
-
-
-                    <span class="section-label">
-
-                        VESSEL CORRELATION
-
-                    </span>
-
-
-                    <h3>
-
-                        Potential Sources
-
-                    </h3>
-
-
-                </div>
-
-
-
-                <div class="vessel-table">
-
-
-                    <!-- Table Header -->
-
-                    <div class="vessel-row table-heading">
-
-
-                        <span>RANK</span>
-
-                        <span>VESSEL</span>
-
-                        <span>DISTANCE</span>
-
-                        <span>CORRELATION</span>
-
-
-                    </div>
-
-
-
-                    <!-- Vessel 01 -->
-
-                    <div class="vessel-row">
-
-
-                        <span>#01</span>
-
-
-                        <span class="pending">
-
-                            Awaiting AIS data
-
-                        </span>
-
-
-                        <span>—</span>
-
-
-                        <span>—</span>
-
-
-                    </div>
-
-
-
-                    <!-- Vessel 02 -->
-
-                    <div class="vessel-row">
-
-
-                        <span>#02</span>
-
-
-                        <span class="pending">
-
-                            Awaiting AIS data
-
-                        </span>
-
-
-                        <span>—</span>
-
-
-                        <span>—</span>
-
-
-                    </div>
-
-
-
-                    <!-- Vessel 03 -->
-
-                    <div class="vessel-row">
-
-
-                        <span>#03</span>
-
-
-                        <span class="pending">
-
-                            Awaiting AIS data
-
-                        </span>
-
-
-                        <span>—</span>
-
-
-                        <span>—</span>
-
-
-                    </div>
-
-
-                </div>
-
-
-            </div>
-
-
         </section>
 
 
@@ -850,7 +711,7 @@
              ABOUT SECTION
         ========================== -->
 
-        <section id="about" class="about-section">
+        <section id="about" class="about-section reveal">
 
 
             <span class="section-label">
@@ -903,7 +764,7 @@
 
         <p>
 
-            Maritime Intelligence & Response System
+            Marine Intelligence & Surveillance System
 
         </p>
 
